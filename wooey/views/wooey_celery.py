@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView, ListView
 
 from ..django_compat import reverse
-from ..models import WooeyJob, UserFile, Favorite
+from ..models import WooeyJob, UserFile, Favorite, WooeyFile
 from .. import settings as wooey_settings
 from ..backend.utils import valid_user, get_file_previews
 
@@ -173,7 +173,7 @@ class JobBase(DetailView):
             archives = out_files.pop('archives', [])
 
             # Get the favorite (scrapbook) status for each file
-            ctype = ContentType.objects.get_for_model(UserFile)
+            ctype = ContentType.objects.get_for_model(WooeyFile)
             favorite_file_ids = Favorite.objects.filter(content_type=ctype, object_id__in=[f['id'] for f in all],
                                                         user=user).values_list('object_id', flat=True)
 

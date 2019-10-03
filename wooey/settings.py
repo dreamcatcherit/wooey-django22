@@ -29,4 +29,3 @@ WOOEY_SCRIPT_DIR = get('WOOEY_SCRIPT_DIR', 'wooey_scripts')
 WOOEY_SHOW_LOCKED_SCRIPTS = get('WOOEY_SHOW_LOCKED_SCRIPTS', True)
 WOOEY_SITE_NAME = get('WOOEY_SITE_NAME', _('Wooey!'))
 WOOEY_SITE_TAG = get('WOOEY_SITE_TAG', _('A web UI for Python scripts'))
-
