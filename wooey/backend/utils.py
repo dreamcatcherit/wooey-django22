@@ -785,9 +785,13 @@ def get_grouped_file_previews(files):
     groups = {'all': []}
     for file_info in files:
         system_file = file_info.system_file
+        job = file_info.job
 
         filedict = {
             'id': system_file.id,
+            'job_name': job.job_name,
+            'job_id': job.id,
+            'job_created_date': job.created_date,
             'object': system_file,
             'name': file_info.filename,
             'preview': json.loads(system_file.filepreview) if system_file.filepreview else None,
