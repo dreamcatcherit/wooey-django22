@@ -21,6 +21,9 @@
 {% block center_content_class %}col-md-12 col-xs-12{% endblock center_content_class %}
 {% block center_content %}
 
+{% if permission_error %}
+    <h1 class="text-center">{{ permission_error }}</h1>
+{% else %}
 <div class="row">
     {% with True as show_preview_metadata %}
 
@@ -33,6 +36,5 @@
     {% endwith %}
 
 </div>
-
+{% endif %}
 {% endblock center_content %}
-
