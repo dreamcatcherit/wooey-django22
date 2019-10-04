@@ -162,23 +162,21 @@ class JobBase(DetailView):
         wooey_job = ctx['wooeyjob']
 
         user = self.request.user
-        if wooey_settings.WOOEY_ALLOW_ANONYMOUS:
-            user = None if not user.is_authenticated else user
+        if not wooey_settings.WOOEY_ALLOW_ANONYMOUS and not user.is_authenticated:
+            ctx['job_error'] = WooeyJob.error_messages['invalid_permissions']
+        else:
+            user = user if user.is_authenticated else None
             job_user = wooey_job.user
-
             if job_user is None or job_user == user or \
                     (user is not None and user.is_superuser) or \
                     ('uuid' in self.kwargs):
-
                 out_files = get_file_previews(wooey_job)
                 all = out_files.pop('all', [])
                 archives = out_files.pop('archives', [])
-
                 # Get the favorite (scrapbook) status for each file
                 ctype = ContentType.objects.get_for_model(WooeyFile)
                 favorite_file_ids = Favorite.objects.filter(content_type=ctype, object_id__in=[f['id'] for f in all],
                                                             user=user).values_list('object_id', flat=True)
-
                 ctx['job_info'] = {
                     'all_files': all,
                     'archives': archives,
@@ -187,13 +185,9 @@ class JobBase(DetailView):
                     'last_modified': wooey_job.modified_date,
                     'job': wooey_job,
                 }
-
                 ctx['favorite_file_ids'] = favorite_file_ids
-
             else:
                 ctx['job_error'] = WooeyJob.error_messages['invalid_permissions']
-        else:
-            ctx['job_error'] = WooeyJob.error_messages['invalid_permissions']
 
         return ctx
 
