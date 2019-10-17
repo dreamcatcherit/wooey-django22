@@ -11,7 +11,7 @@ from ..django_compat import reverse
 from .. import settings as wooey_settings
 
 class WooeyRegister(CreateView):
-    template_name = 'wooey/registration/register.html'
+    template_name = 'registration/register.html'
     model = get_user_model()
     fields = ('username', 'email', 'password')
 
