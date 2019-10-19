@@ -13,7 +13,7 @@ from django.views.generic import DetailView, TemplateView, View
 
 from ..backend import utils
 from ..django_compat import reverse
-from ..models import WooeyJob, Script, UserFile, Favorite, ScriptVersion
+from ..models import WooeyJob, Script, UserFile, Favorite, ScriptVersion, WooeyFile
 from .. import settings as wooey_settings
 
 
@@ -199,19 +199,21 @@ class WooeyScrapbookView(TemplateView):
     template_name = 'wooey/scrapbook.html'
 
     def get_context_data(self, **kwargs):
+        user = self.request.user
         ctx = super(WooeyScrapbookView, self).get_context_data(**kwargs)
 
-        # Get the id of every favorite (scrapbook) file
-        ctype = ContentType.objects.get_for_model(UserFile)
-        favorite_file_ids = Favorite.objects.filter(content_type=ctype, user=self.request.user).values_list('object_id', flat=True)
+        if user.is_authenticated:
+            # Get the id of every favorite (scrapbook) file
+            ctype = ContentType.objects.get_for_model(WooeyFile)
+            favorite_file_ids = Favorite.objects.filter(content_type=ctype, user=user).values_list('object_id', flat=True)
+            out_files = utils.get_file_previews_by_ids(favorite_file_ids)
 
-        out_files = utils.get_file_previews_by_ids(favorite_file_ids)
-
-        all = out_files.pop('all', [])
-        archives = out_files.pop('archives', [])
-
-        ctx['file_groups'] = out_files
-        ctx['favorite_file_ids'] = favorite_file_ids
+            all = out_files.pop('all', [])
+            archives = out_files.pop('archives', [])
+            ctx['file_groups'] = out_files
+            ctx['favorite_file_ids'] = favorite_file_ids
+        else:
+            ctx['permission_error'] = _('You are not authenticated to view this page.')
 
         return ctx
 
