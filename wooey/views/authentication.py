@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate, get_user_model
 from django.forms.models import modelform_factory
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_text
 from django.views.generic import CreateView
@@ -57,13 +58,21 @@ def wooey_login(request):
         user = user[0]
     else:
         user = None
-    form = form(request.POST, instance=user)
-    if form.is_valid():
-        data = form.cleaned_data
-        user = authenticate(username=data['username'], password=data['password'])
-        if user is None:
-            return JsonResponse({'valid': False, 'errors': {'__all__': [force_text(_('You have entered an invalid username or password.'))]}})
-        login(request, user)
-        return JsonResponse({'valid': True, 'redirect': request.POST['next']})
-    else:
-        return JsonResponse({'valid': False, 'errors': form.errors})
+
+    if request.method == "POST":
+        form = form(request.POST, instance=user)
+        if form.is_valid():
+            data = form.cleaned_data
+            user = authenticate(username=data['username'], password=data['password'])
+            if user is None:
+                error_msg = force_text(_('You have entered an invalid username or password.'))
+                return render(request, "registration/login.html", {
+                    "form": form,
+                    "error_msg": error_msg
+                })
+            login(request, user)
+            next_url = request.POST.get("next", "/")
+            if next_url == "/accounts/login/":
+                next_url = "/"
+            return redirect(next_url)
+    return render(request, "registration/login.html", {"form": form})
