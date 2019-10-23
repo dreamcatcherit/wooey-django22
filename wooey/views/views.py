@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.forms import FileField
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.encoding import force_text
@@ -266,7 +267,7 @@ class WooeyScriptSearchJSONHTML(WooeyScriptSearchBase):
     """
 
     def search(self, request):
-        results = []
-        for script in self.search_results:
-            results.append(render_to_string('wooey/scripts/script_panel.html', {'script': script}, context_instance=RequestContext(request)))
-        return JsonResponse({'results': results})
+        scripts = self.search_results
+        return render(request, 'wooey/scripts/script_panel.html', {
+            'scripts': scripts
+        })
