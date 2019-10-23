@@ -268,6 +268,12 @@ class WooeyScriptSearchJSONHTML(WooeyScriptSearchBase):
 
     def search(self, request):
         scripts = self.search_results
+        favorite_script_ids = []
+        if self.request.user.is_authenticated:
+            ctype = ContentType.objects.get_for_model(Script)
+            favorite_script_ids = Favorite.objects.filter(content_type=ctype, user__id=self.request.user.id).values_list('object_id', flat=True)
+
         return render(request, 'wooey/scripts/script_panel.html', {
-            'scripts': scripts
+            "scripts": scripts,
+            "favorite_script_ids": favorite_script_ids
         })
