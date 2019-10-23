@@ -36,12 +36,8 @@
     </div>
 
     <div class="row" id="script-list">
-
-    {% for script in scripts %}
         {% include 'wooey/scripts/script_panel.html' %}
-    {% endfor %}
-
-</div>
+    </div>
 
 
 
@@ -58,15 +54,12 @@
                 url: '{% url 'wooey:wooey_search_script_jsonhtml' %}',
                 method: 'GET',
                 data: {q: query},
-                dataType: 'json',
                 async: true,
                 cache: false,
                 contentType: false,
                 success: function(data){
                     $("#script-list").empty()
-                    for (var i in data['results']) {
-                        $("#script-list").append(data['results'][i]);
-                    }
+                    $("#script-list").html(data);
                     $("a[data-favorite]").click(toggleFavorite);
                 }
             });
