@@ -779,29 +779,30 @@ def get_checksum(path=None, buff=None, extra=None):
 def get_grouped_file_previews(files):
     groups = {'all': []}
     for file_info in files:
-        system_file = file_info.system_file
-        job = file_info.job
+        if ".log" not in file_info.filename:
+            system_file = file_info.system_file
+            job = file_info.job
 
-        filedict = {
-            'id': system_file.id,
-            'job_name': job.job_name,
-            'job_id': job.id,
-            'job_created_date': job.created_date,
-            'object': system_file,
-            'name': file_info.filename,
-            'preview': json.loads(system_file.filepreview) if system_file.filepreview else None,
-            'url': get_storage(local=False).url(system_file.filepath.name),
-            'slug': file_info.parameter.parameter.script_param if file_info.parameter else None,
-            'basename': os.path.basename(system_file.filepath.name),
-            'filetype': system_file.filetype,
-            'size_bytes': system_file.size_bytes,
-        }
-        try:
-            groups[system_file.filetype].append(filedict)
-        except KeyError:
-            groups[system_file.filetype] = [filedict]
-        if system_file.filetype != 'all':
-            groups['all'].append(filedict)
+            filedict = {
+                'id': system_file.id,
+                'job_name': job.job_name,
+                'job_id': job.id,
+                'job_created_date': job.created_date,
+                'object': system_file,
+                'name': file_info.filename,
+                'preview': json.loads(system_file.filepreview) if system_file.filepreview else None,
+                'url': get_storage(local=False).url(system_file.filepath.name),
+                'slug': file_info.parameter.parameter.script_param if file_info.parameter else None,
+                'basename': os.path.basename(system_file.filepath.name),
+                'filetype': system_file.filetype,
+                'size_bytes': system_file.size_bytes,
+            }
+            try:
+                groups[system_file.filetype].append(filedict)
+            except KeyError:
+                groups[system_file.filetype] = [filedict]
+            if system_file.filetype != 'all':
+                groups['all'].append(filedict)
     return groups
 
 
